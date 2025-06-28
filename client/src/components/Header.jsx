@@ -1,10 +1,14 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { FaHome, FaUser, FaSignInAlt, FaUserPlus, FaInfoCircle, FaSearch, FaBars, FaTimes } from 'react-icons/fa'
+import { FaHome, FaUser, FaSignInAlt, FaUserPlus, FaInfoCircle, FaSearch, FaBars, FaTimes, FaUserCircle } from 'react-icons/fa'
 import logo from '../assets/broker-logo.svg'
+import { useSelector } from 'react-redux'
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
+  const currentUser = useSelector((state) => state.user.currentUser)
+  // Support both direct user object and nested user object (backend response)
+  const user = currentUser?.data?.user || currentUser;
 
   return (
     <header className="bg-gradient-to-r from-white via-green-100 to-blue-100 shadow-md sticky top-0 z-50 backdrop-blur-md">
@@ -49,15 +53,25 @@ export default function Header() {
             <Link to="/about" className="flex items-center gap-1 text-gray-700 font-medium px-3 py-2 rounded-lg transition bg-transparent hover:bg-gradient-to-r hover:from-green-200 hover:via-blue-100 hover:to-blue-200 hover:shadow-md hover:text-green-700" onClick={() => setMenuOpen(false)}>
               <FaInfoCircle className="w-5 h-5" /> About
             </Link>
-            <Link to="/profile" className="flex items-center gap-1 text-gray-700 font-medium px-3 py-2 rounded-lg transition bg-transparent hover:bg-gradient-to-r hover:from-green-200 hover:via-blue-100 hover:to-blue-200 hover:shadow-md hover:text-green-700" onClick={() => setMenuOpen(false)}>
-              <FaUser className="w-5 h-5" /> Profile
-            </Link>
-            <Link to="/sign-in" className="flex items-center gap-1 text-gray-700 font-medium px-3 py-2 rounded-lg transition bg-transparent hover:bg-gradient-to-r hover:from-green-200 hover:via-blue-100 hover:to-blue-200 hover:shadow-md hover:text-green-700" onClick={() => setMenuOpen(false)}>
-              <FaSignInAlt className="w-5 h-5" /> Sign In
-            </Link>
-            <Link to="/sign-up" className="flex items-center gap-1 text-white bg-green-400 hover:bg-gradient-to-r hover:from-green-400 hover:via-green-300 hover:to-blue-200 hover:text-green-900 font-semibold px-4 py-2 rounded-full shadow transition" onClick={() => setMenuOpen(false)}>
-              <FaUserPlus className="w-5 h-5" /> Sign Up
-            </Link>
+            {user && user.email ? (
+              <Link to="/profile" className="flex items-center gap-2 text-gray-700 font-medium px-3 py-2 rounded-lg transition bg-transparent hover:bg-gradient-to-r hover:from-green-200 hover:via-blue-100 hover:to-blue-200 hover:shadow-md hover:text-green-700" onClick={() => setMenuOpen(false)}>
+                {user.photoURL || user.avatar ? (
+                  <img src={user.photoURL || user.avatar} alt="avatar" className="w-8 h-8 rounded-full border-2 border-green-200 shadow object-cover" />
+                ) : (
+                  <FaUserCircle className="w-8 h-8 text-green-300" />
+                )}
+                <span className="hidden sm:inline">Profile</span>
+              </Link>
+            ) : (
+              <>
+                <Link to="/sign-in" className="flex items-center gap-1 text-gray-700 font-medium px-3 py-2 rounded-lg transition bg-transparent hover:bg-gradient-to-r hover:from-green-200 hover:via-blue-100 hover:to-blue-200 hover:shadow-md hover:text-green-700" onClick={() => setMenuOpen(false)}>
+                  <FaSignInAlt className="w-5 h-5" /> Sign In
+                </Link>
+                <Link to="/sign-up" className="flex items-center gap-1 text-white bg-green-400 hover:bg-gradient-to-r hover:from-green-400 hover:via-green-300 hover:to-blue-200 hover:text-green-900 font-semibold px-4 py-2 rounded-full shadow transition" onClick={() => setMenuOpen(false)}>
+                  <FaUserPlus className="w-5 h-5" /> Sign Up
+                </Link>
+              </>
+            )}
             {/* Search bar for mobile (shown only in mobile menu) */}
             <form className="w-full px-4 mt-4 sm:hidden">
               <div className="relative">
