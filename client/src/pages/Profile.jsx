@@ -45,21 +45,53 @@ function Profile() {
       reader.readAsDataURL(file);
     }
   };
-  const handleSave = (e) => {
+  const handleSave = async (e) => {
     e.preventDefault();
-    // Here you would call backend API to update user info and avatar
-    // For now, update Redux state locally for instant UI update
-    const updatedUser = {
-      ...user,
-      displayName: editValues.name,
+
+    // Prepare the data to send to the backend
+    const updatedUserData = {
       username: editValues.name,
       email: editValues.email,
       password: editValues.password,
-      photoURL: avatarPreview || user.photoURL,
       avatar: avatarPreview || user.avatar,
     };
-    dispatch(signInSuccess(updatedUser));
-    setModalOpen(false);
+
+    try {
+      // Send a POST request to the backend to update the user
+      // The backend expects the user's id in the URL
+      const response = await fetch(
+        `/api/update/${user._id || user.id}`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include', // Important: send cookies (for JWT auth)
+          body: JSON.stringify(updatedUserData),
+        }
+      );
+
+      let data;
+      try {
+        data = await response.json();
+      } catch {
+        data = {};
+      }
+
+      if (!response.ok) {
+        // If the response is not ok, throw an error to be caught below
+        throw new Error(data.message || 'Failed to update user');
+      }
+
+      // Update Redux state with the new user data
+      dispatch(signInSuccess(data.data.user));
+      setModalOpen(false);
+      // Optionally, show a success message here
+    } catch (error) {
+      // Handle errors (show error message to user, etc.)
+      dispatch(signInFailure(error.message));
+      alert(error.message);
+    }
   };
   const handleOpenModal = () => {
     setEditValues({
@@ -74,6 +106,11 @@ function Profile() {
   const handleSignOut = () => {
     dispatch(signInSuccess(null)); // Clear user from Redux
     navigate('/sign-in');
+  };
+
+  // Handler for Create Listing button
+  const handleCreateListing = () => {
+    navigate('/create-listing');
   };
 
   const name = user.displayName || user.username || 'User';
@@ -102,8 +139,20 @@ function Profile() {
               <div className="text-gray-500 text-base truncate">{user.email}</div>
             </div>
             {/* Edit Button */}
-            <button onClick={handleOpenModal} className="ml-4 bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold px-5 py-2 rounded-lg shadow-sm border border-blue-100 transition flex items-center gap-2 text-base focus:outline-none focus:ring-2 focus:ring-blue-200">
-              <FaEdit className="w-5 h-5" /> Edit
+            <button
+              onClick={handleOpenModal}
+              className="ml-4 bg-gradient-to-r from-blue-400 to-green-400 hover:from-blue-500 hover:to-green-500 text-white font-bold px-6 py-2 rounded-full shadow-lg border-none transition flex items-center gap-2 text-base focus:outline-none focus:ring-2 focus:ring-blue-200 hover:scale-105 active:scale-100"
+            >
+              <FaEdit className="w-5 h-5" /> Edit Profile
+            </button>
+          </div>
+          {/* Add Create Listing Button below Edit Button */}
+          <div className="flex justify-end px-8 pb-4">
+            <button
+              onClick={handleCreateListing}
+              className="bg-gradient-to-r from-green-400 to-blue-400 hover:from-green-500 hover:to-blue-500 text-white font-bold px-6 py-2 rounded-full shadow-lg border-none transition flex items-center gap-2 text-base focus:outline-none focus:ring-2 focus:ring-green-200 hover:scale-105 active:scale-100"
+            >
+              <FaEdit className="w-5 h-5 rotate-45" /> Create Listing
             </button>
           </div>
           {/* Card Body: Details */}

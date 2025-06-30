@@ -44,7 +44,7 @@ function Signin() {
     setSuccess('')
     try {
       // Make POST request to backend /api/signin
-      const res = await axios.post(`${BACKEND}/api/signin`, form)
+      const res = await axios.post(`${BACKEND}/api/signin`, form, { withCredentials: true })
       dispatch(signInSuccess(res.data)); // Set user in Redux
       setSuccess('Sign in successful! Redirecting...')
       setError('')

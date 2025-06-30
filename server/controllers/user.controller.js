@@ -24,18 +24,33 @@ const signup= async(req,res)=>{
     const user=new User({username,email,password:hashedPassword})
     
     try{
-          await user.save()
-           res.status(201).json({
-        message:'user created successfully',
-  })
+        await user.save()
+        res.status(201).json({
+            message:'user created successfully',
+        })
     }
-    
     catch(err){
+        // Log the error for debugging
+        console.error('Signup error:', err);
+        // Handle duplicate key error (username or email already exists)
+        if (err.code === 11000) {
+            const field = Object.keys(err.keyPattern)[0];
+            return res.status(400).json({
+                message: `A user with that ${field} already exists.`
+            });
+        }
+        // Handle validation errors
+        if (err.name === 'ValidationError') {
+            return res.status(400).json({
+                message: err.message
+            });
+        }
+        // Generic error response
         res.status(500).json({
             message:'error creating user',
             error:err.message
         });
-}
+    }
 }
 
 /**
@@ -75,13 +90,9 @@ const signin = async (req, res, next) => {
 
         // 4. Set cookie options for JWT
         const cookieOptions = {
-            expires: new Date(
-                Date.now() + (Number(process.env.JWT_COOKIE_EXPIRES_IN) || 7) * 24 * 60 * 60 * 1000
-            ),
-            httpOnly: true, // Prevents client-side JS from accessing the cookie
-            secure: process.env.NODE_ENV === 'production', // Only send cookie over HTTPS in production
-            sameSite: 'strict', // Prevents CSRF
-            domain: process.env.COOKIE_DOMAIN // For cross-domain cookies if needed
+            httpOnly: true, // Set to true for production security
+            secure: false,
+            sameSite: 'lax'
         };
 
         // 5. Set JWT as HTTP-only cookie
@@ -144,11 +155,46 @@ const google = async (req, res, next) => {
     }
 };
 
+const updateUser = async (req, res, next) => {
+    // JWT may contain either 'id' or '_id' depending on how it was signed/decoded
+    const userId = req.user.id || req.user._id;
+    // Debug: log the values being compared
+    console.log('userId from token:', userId, 'req.params.id:', req.params.id);
+    // Only allow the user to update their own profile
+    if (userId !== req.params.id) return next(new AppError('You do not have permission to update this user', 403));
+
+    try {
+        if (req.body.password) {
+            req.body.password = bcrypt.hashSync(req.body.password, 10);
+        }
+
+        const updatedUser = await User.findByIdAndUpdate(
+            req.params.id,
+            {
+                $set: {
+                    username: req.body.username,
+                    email: req.body.email,
+                    password: req.body.password,
+                    avatar: req.body.avatar
+                }
+            },
+            { new: true }
+        );
+
+        const { password, ...rest } = updatedUser._doc;
+        res.status(200).json({ status: 'success', data: { user: rest } });
+    } catch (err) {
+        next(err);
+    }
+};
+
+
 const userControllers={
     test,
     signup,
     signin,
     google,
+    updateUser,
  }
 
 module.exports=userControllers;
