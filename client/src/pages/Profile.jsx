@@ -113,6 +113,11 @@ function Profile() {
     navigate('/create-listing');
   };
 
+  // Handler for Show Listing button
+  const handleShowListing = () => {
+    navigate('/my-listings');
+  };
+
   const name = user.displayName || user.username || 'User';
   const email = user.email || '';
   const uid = user.uid || user._id || '';
@@ -147,12 +152,18 @@ function Profile() {
             </button>
           </div>
           {/* Add Create Listing Button below Edit Button */}
-          <div className="flex justify-end px-8 pb-4">
+          <div className="flex justify-end px-8 pb-4 gap-4">
             <button
               onClick={handleCreateListing}
               className="bg-gradient-to-r from-green-400 to-blue-400 hover:from-green-500 hover:to-blue-500 text-white font-bold px-6 py-2 rounded-full shadow-lg border-none transition flex items-center gap-2 text-base focus:outline-none focus:ring-2 focus:ring-green-200 hover:scale-105 active:scale-100"
             >
               <FaEdit className="w-5 h-5 rotate-45" /> Create Listing
+            </button>
+            <button
+              onClick={handleShowListing}
+              className="bg-gradient-to-r from-blue-400 to-green-400 hover:from-blue-500 hover:to-green-500 text-white font-bold px-6 py-2 rounded-full shadow-lg border-none transition flex items-center gap-2 text-base focus:outline-none focus:ring-2 focus:ring-blue-200 hover:scale-105 active:scale-100"
+            >
+              <FaEye className="w-5 h-5" /> ShowListing
             </button>
           </div>
           {/* Card Body: Details */}

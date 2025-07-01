@@ -8,6 +8,7 @@ router.post('/signup',userControllers.signup)
 router.post('/signin',userControllers.signin)
 router.post('/google',userControllers.google)
 router.post('/update/:id',verifyUser,userControllers.updateUser)
+router.get('/listedItem/:userId',verifyUser,userControllers.getUserListing)
 
 
 module.exports=router;

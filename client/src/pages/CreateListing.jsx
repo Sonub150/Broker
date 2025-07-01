@@ -1,11 +1,15 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import { FaHome, FaMapMarkerAlt, FaDollarSign, FaBed, FaBath, FaCouch, FaCar, FaTag, FaImage, FaUser, FaRulerCombined, FaCalendarAlt, FaWifi, FaSwimmingPool, FaTree, FaUpload } from 'react-icons/fa';
 
 // Create Listing page for users to add a new listing
 function CreateListing() {
   const navigate = useNavigate();
   const fileInputRef = useRef();
+  const currentUser = useSelector((state) => state.user.currentUser);
+  const user = currentUser?.data?.user || currentUser;
+  const userId = user?._id || user?.id;
   // State for all listing fields
   const [form, setForm] = useState({
     name: '',
@@ -22,7 +26,7 @@ function CreateListing() {
     offer: false,
     imageUrls: [''],
     localImages: [], // For local image previews
-    userRef: '', // Should be set to current user's ID in a real app
+    userRef: userId || '', // Set automatically to current user's ID
     size: '', // New field: property size
     yearBuilt: '', // New field: year built
     amenities: {
@@ -123,6 +127,12 @@ function CreateListing() {
       <div className="w-full max-w-3xl bg-white/95 rounded-3xl shadow-2xl p-0 overflow-hidden border border-blue-100">
         <div className="bg-gradient-to-r from-green-400 to-blue-400 py-8 px-8 text-white text-center rounded-t-3xl shadow-md">
           <h2 className="text-4xl font-extrabold mb-2 drop-shadow-lg flex items-center justify-center gap-3"><FaHome className="inline-block mb-1" /> Create Listing</h2>
+          <div className="flex justify-center mb-2">
+            <span className="inline-flex items-center gap-2 bg-blue-100 text-blue-700 font-mono text-xs px-4 py-1 rounded-full shadow-sm border border-blue-200">
+              <FaUser className="text-blue-400" />
+              User ID: <span className="font-semibold">{userId}</span>
+            </span>
+          </div>
           <p className="text-lg font-medium opacity-90">Fill out the details below to add a new property listing.</p>
         </div>
         <form onSubmit={handleSubmit} className="p-10 flex flex-col gap-10">
@@ -297,13 +307,6 @@ function CreateListing() {
                 </div>
               ))}
             </div>
-          </div>
-
-          {/* User Reference */}
-          <div>
-            <h3 className="text-xl font-bold text-blue-700 mb-4 flex items-center gap-2"><FaUser /> User Reference</h3>
-            <label className="block text-gray-700 font-semibold mb-1 flex items-center gap-2"><FaUser /> User Reference (user id)</label>
-            <input name="userRef" value={form.userRef} onChange={handleChange} placeholder="User Reference (user id)" required className="input w-full focus:ring-2 focus:ring-blue-300" />
           </div>
 
           <button type="submit" className="bg-gradient-to-r from-green-400 to-blue-400 hover:from-green-500 hover:to-blue-500 text-white font-bold py-3 rounded-full shadow-lg transition text-lg mt-2 flex items-center justify-center gap-2" disabled={loading}>

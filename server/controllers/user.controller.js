@@ -2,6 +2,7 @@ const User=require('../models/user.models')
 const AppError=require('../utills/error')
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const Listing = require('../models/listing.model');
 
 // Improved error handler utility
 const errorHandler = (statusCode, message) => {
@@ -188,6 +189,39 @@ const updateUser = async (req, res, next) => {
     }
 };
 
+const getUserListing = async (req, res, next) => {
+    try {
+        // Check if user ID is provided
+        if (!req.params.userId) {
+            return next(new AppError('User ID is required', 400));
+        }
+
+        // Only allow the user to view their own listings
+        if (req.user.id !== req.params.userId) {
+            return next(new AppError('You can only view your own listings', 401));
+        }
+
+        // Find all listings for the user
+        const userListings = await Listing.find({ userRef: req.params.userId });
+
+        // Check if listings exist
+        if (!userListings || userListings.length === 0) {
+            return next(new AppError('No listings found for this user', 404));
+        }
+
+        // Return successful response
+        res.status(200).json({
+            status: 'success',
+            data: {
+                listings: userListings
+            }
+        });
+        
+    } catch (err) {
+        // Pass any errors to the error handling middleware
+        next(err);
+    }
+};
 
 const userControllers={
     test,
@@ -195,6 +229,7 @@ const userControllers={
     signin,
     google,
     updateUser,
+    getUserListing,
  }
 
 module.exports=userControllers;
