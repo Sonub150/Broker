@@ -2,6 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { FaMapMarkerAlt, FaBed, FaBath, FaCouch, FaCar, FaRupeeSign } from 'react-icons/fa';
 
+const BACKEND = (import.meta.env.VITE_BACKEND && import.meta.env.VITE_BACKEND.startsWith('mongodb'))
+  ? import.meta.env.VITE_BACKEND
+  : (import.meta.env.VITE_BACKEND || import.meta.env.VITE_MONGO || 'http://localhost:3000');
+
 function useQuery() {
   return new URLSearchParams(useLocation().search);
 }
@@ -18,7 +22,7 @@ export default function SearchResults() {
       setLoading(true);
       setError('');
       try {
-        const res = await fetch(`https://broker-5m9x.onrender.com/api/get?q=${encodeURIComponent(q)}`);
+        const res = await fetch(`${BACKEND}/api/get?q=${encodeURIComponent(q)}`);
         const data = await res.json();
         if (!res.ok) throw new Error(data.message || 'Failed to fetch search results');
         const allListings = data.data?.listings || data.listings || data.listing || [];

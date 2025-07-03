@@ -9,7 +9,9 @@ export default defineConfig({
   ],
   server: {
     proxy: {
-      '/api': 'https://broker-5m9x.onrender.com',
+      '/api': process.env.VITE_BACKEND && process.env.VITE_BACKEND.startsWith('mongodb')
+        ? process.env.VITE_BACKEND
+        : (process.env.VITE_BACKEND || process.env.VITE_MONGO || 'http://localhost:3000'),
     },
   },
 })

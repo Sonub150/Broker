@@ -3,6 +3,10 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { FaHome, FaMapMarkerAlt, FaDollarSign, FaBed, FaBath, FaCouch, FaCar, FaTag, FaImage, FaUser, FaRulerCombined, FaCalendarAlt, FaWifi, FaSwimmingPool, FaTree, FaUpload, FaEdit } from 'react-icons/fa';
 
+const BACKEND = (import.meta.env.VITE_BACKEND && import.meta.env.VITE_BACKEND.startsWith('mongodb'))
+  ? import.meta.env.VITE_BACKEND
+  : (import.meta.env.VITE_BACKEND || import.meta.env.VITE_MONGO || 'http://localhost:3000');
+
 function EditListing() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -103,7 +107,7 @@ function EditListing() {
     setLoading(true);
     try {
       // Use the full backend URL for updating the listing
-      const response = await fetch(`https://broker-5m9x.onrender.com/api/listingUpdate/${id}`, {
+      const response = await fetch(`${BACKEND}/api/listingUpdate/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

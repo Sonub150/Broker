@@ -5,6 +5,10 @@ function useQuery() {
   return new URLSearchParams(useLocation().search);
 }
 
+const BACKEND = (import.meta.env.VITE_BACKEND && import.meta.env.VITE_BACKEND.startsWith('mongodb'))
+  ? import.meta.env.VITE_BACKEND
+  : (import.meta.env.VITE_BACKEND || import.meta.env.VITE_MONGO || 'http://localhost:3000');
+
 export default function ResetPassword() {
   const query = useQuery();
   const token = query.get('token') || '';
@@ -33,7 +37,7 @@ export default function ResetPassword() {
     }
     setLoading(true);
     try {
-      const res = await fetch('https://broker-5m9x.onrender.com/api/resetpassword', {
+      const res = await fetch(`${BACKEND}/api/resetpassword`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token, newPassword }),

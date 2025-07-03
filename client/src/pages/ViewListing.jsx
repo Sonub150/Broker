@@ -5,6 +5,10 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 import { Pagination, Autoplay } from 'swiper/modules';
 
+const BACKEND = (import.meta.env.VITE_BACKEND && import.meta.env.VITE_BACKEND.startsWith('mongodb'))
+  ? import.meta.env.VITE_BACKEND
+  : (import.meta.env.VITE_BACKEND || import.meta.env.VITE_MONGO || 'http://localhost:3000');
+
 export default function ViewListing() {
   const { id } = useParams();
   const [listing, setListing] = useState(null);
@@ -16,7 +20,7 @@ export default function ViewListing() {
       setLoading(true);
       setError('');
       try {
-        const res = await fetch(`https://broker-5m9x.onrender.com/api/listing/${id}`, {
+        const res = await fetch(`${BACKEND}/api/listing/${id}`, {
           credentials: 'include'
         });
         const data = await res.json();

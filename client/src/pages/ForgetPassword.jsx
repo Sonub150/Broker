@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
 
+const BACKEND = (import.meta.env.VITE_BACKEND && import.meta.env.VITE_BACKEND.startsWith('mongodb'))
+  ? import.meta.env.VITE_BACKEND
+  : (import.meta.env.VITE_BACKEND || import.meta.env.VITE_MONGO || 'http://localhost:3000');
+
 export default function ForgetPassword() {
   // State for form fields and UI
   const [email, setEmail] = useState('');
@@ -19,7 +23,7 @@ export default function ForgetPassword() {
     setError('');
     setLoading(true);
     try {
-      const res = await fetch('https://broker-5m9x.onrender.com/api/forgetpassword', {
+      const res = await fetch(`${BACKEND}/api/forgetpassword`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
@@ -41,7 +45,7 @@ export default function ForgetPassword() {
     setError('');
     setLoading(true);
     try {
-      const res = await fetch('https://broker-5m9x.onrender.com/api/sendotp', {
+      const res = await fetch(`${BACKEND}/api/sendotp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
@@ -72,7 +76,7 @@ export default function ForgetPassword() {
     }
     setLoading(true);
     try {
-      const res = await fetch('https://broker-5m9x.onrender.com/api/resetpassword-otp', {
+      const res = await fetch(`${BACKEND}/api/resetpassword-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, otp, newPassword }),

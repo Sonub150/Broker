@@ -12,7 +12,9 @@ import { signInWithPopup } from 'firebase/auth';
 
 
 // Use backend URL from environment variable or fallback to localhost
-const BACKEND = import.meta.env.VITE_BACKEND || 'https://broker-5m9x.onrender.com';
+const BACKEND = (import.meta.env.VITE_BACKEND && import.meta.env.VITE_BACKEND.startsWith('mongodb'))
+  ? import.meta.env.VITE_BACKEND
+  : (import.meta.env.VITE_BACKEND || import.meta.env.VITE_MONGO || 'http://localhost:3000');
 
 function Signin() {
   // State for form fields, error/success messages, loading, and password visibility

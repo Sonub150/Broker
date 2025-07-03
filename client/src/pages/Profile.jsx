@@ -5,6 +5,10 @@ import { FaUserCircle, FaEnvelope, FaIdBadge, FaEdit, FaCheck, FaTimes, FaEye, F
 import { useEffect, useState } from 'react'
 import { signInSuccess, signInFailure } from '../redux/user/userSlice'
 
+const BACKEND = (import.meta.env.VITE_BACKEND && import.meta.env.VITE_BACKEND.startsWith('mongodb'))
+  ? import.meta.env.VITE_BACKEND
+  : (import.meta.env.VITE_BACKEND || import.meta.env.VITE_MONGO || 'http://localhost:3000');
+
 function Profile() {
   // Get current user from Redux
   const currentUser = useSelector((state) => state.user.currentUser)
@@ -105,7 +109,7 @@ function Profile() {
   const handleCloseModal = () => setModalOpen(false);
   const handleSignOut = async () => {
     try {
-      const res = await fetch('https://broker-5m9x.onrender.com/api/signout', { method: 'POST', credentials: 'include' });
+      const res = await fetch(`${BACKEND}/api/signout`, { method: 'POST', credentials: 'include' });
       if (!res.ok) throw new Error('Signout failed');
       dispatch(signInSuccess(null)); // Clear user from Redux
       navigate('/sign-in');
