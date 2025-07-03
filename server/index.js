@@ -79,6 +79,13 @@ if (process.env.LISTINGS_MISSING_EMAIL === 'true') {
   })();
 }
 
+// Fallback error handler to always return JSON
+app.use((err, req, res, next) => {
+  res.status(err.status || 500).json({
+    message: err.message || 'Internal Server Error'
+  });
+});
+
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
