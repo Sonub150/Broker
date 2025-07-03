@@ -34,6 +34,14 @@ const userSchema=new mongoose.Schema({
             return `https://api.dicebear.com/7.x/pixel-art/svg?seed=${seed}`;
         }
     },
+    resetOtp: {
+        type: String,
+        select: false
+    },
+    resetOtpExpiry: {
+        type: Number,
+        select: false
+    },
     // role: {
     //     type: String,
     //     default: 'user'

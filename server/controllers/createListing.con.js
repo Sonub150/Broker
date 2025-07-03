@@ -156,12 +156,101 @@ const getAllListings = async (req, res, next) => {
   }
 };
 
+const search = async (req, res, next) => {
+    try {
+        const {
+            q, // new general search param
+            name,
+            location,
+            address,
+            city,
+            type,
+            minPrice,
+            maxPrice,
+            bedrooms,
+            bathrooms,
+            offer,
+            furnished,
+            page = 1,
+            limit = 9
+        } = req.query;
+
+        // Build the query object
+        let query = {};
+        if (q) {
+            // Search across multiple fields
+            query = {
+                $or: [
+                    { name: { $regex: q, $options: 'i' } },
+                    { location: { $regex: q, $options: 'i' } },
+                    { address: { $regex: q, $options: 'i' } },
+                    { city: { $regex: q, $options: 'i' } }
+                ]
+            };
+        } else {
+            if (name) query.name = { $regex: name, $options: 'i' };
+            if (location) query.location = { $regex: location, $options: 'i' };
+            if (address) query.address = { $regex: address, $options: 'i' };
+            if (city) query.city = { $regex: city, $options: 'i' };
+            if (type) query.type = type;
+            if (offer !== undefined) query.offer = offer === 'true';
+            if (furnished !== undefined) query.furnished = furnished === 'true';
+            if (bedrooms) query.bedrooms = Number(bedrooms);
+            if (bathrooms) query.bathrooms = Number(bathrooms);
+            if (minPrice || maxPrice) {
+                query.regularPrice = {};
+                if (minPrice) query.regularPrice.$gte = Number(minPrice);
+                if (maxPrice) query.regularPrice.$lte = Number(maxPrice);
+            }
+        }
+
+        // Pagination
+        const skip = (Number(page) - 1) * Number(limit);
+
+        // Find listings
+        const listings = await Listing.find(query)
+            .skip(skip)
+            .limit(Number(limit))
+            .sort({ createdAt: -1 });
+
+        // Total count for pagination
+        const total = await Listing.countDocuments(query);
+
+        res.status(200).json({
+            status: 'success',
+            total,
+            page: Number(page),
+            limit: Number(limit),
+            data: { listings }
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// Controller to get the listing with the lowest discountedPrice
+// GET /api/deal-of-the-day
+const getLowestPriceListing = async (req, res, next) => {
+  try {
+    // Find the listing with the lowest discountedPrice
+    const listing = await Listing.findOne().sort({ discountedPrice: 1 });
+    if (!listing) {
+      return res.status(404).json({ message: 'No listings found' });
+    }
+    res.status(200).json({ data: { listing } });
+  } catch (err) {
+    next(err);
+  }
+};
+
 const listing={
     createListing,
     listingDelete,
     listingUpdate,
     getListingById,
     getAllListings,
+    search,
+    getLowestPriceListing,
 }
 
 module.exports=listing;

@@ -3,6 +3,7 @@ const AppError=require('../utills/error')
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const Listing = require('../models/listing.model');
+const transporter = require('../utills/mailer');
 
 // Improved error handler utility
 const errorHandler = (statusCode, message) => {
@@ -53,6 +54,131 @@ const signup= async(req,res)=>{
         });
     }
 }
+
+const signout = async (req, res, next) => {
+  try {
+    res.clearCookie('jwt');
+    res.status(200).json({ message: 'Signed out successfully' });
+  } catch (err) {
+    next(new AppError('Signout failed', 500));
+  }
+};
+
+const forgetpassword = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ message: 'Email is required' });
+    }
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found with this email' });
+    }
+    // Generate a reset token (JWT, expires in 1 hour)
+    const resetToken = jwt.sign(
+      { id: user._id },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+    // Construct reset link (adjust frontend URL as needed)
+    const resetLink = `http://localhost:5173/reset-password?token=${resetToken}`;
+    // Send email with reset link
+    await transporter.sendMail({
+      from: process.env.SENDER_EMAIL,
+      to: email,
+      subject: 'Password Reset Request',
+      text: `You requested a password reset. Click the link to reset your password: ${resetLink}`,
+      html: `<p>You requested a password reset.</p><p><a href="${resetLink}">Reset Password</a></p><p>If you did not request this, ignore this email.</p>`
+    });
+    res.status(200).json({ message: 'Password reset link sent to email.' });
+  } catch (err) {
+    console.error('Forget password error:', err); // Log the real error
+    res.status(500).json({ message: 'Forget password failed', error: err.message });
+  }
+};
+
+// Reset password endpoint
+const resetpassword = async (req, res, next) => {
+  try {
+    const { token, newPassword } = req.body;
+    if (!token || !newPassword) {
+      return res.status(400).json({ message: 'Token and new password are required' });
+    }
+    // Verify token
+    let payload;
+    try {
+      payload = jwt.verify(token, process.env.JWT_SECRET);
+    } catch (err) {
+      return res.status(400).json({ message: 'Invalid or expired token' });
+    }
+    // Find user
+    const user = await User.findById(payload.id).select('+password');
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    // Update password
+    user.password = await bcrypt.hash(newPassword, 10);
+    await user.save();
+    res.status(200).json({ message: 'Password has been reset successfully.' });
+  } catch (err) {
+    console.error('Reset password error:', err);
+    res.status(500).json({ message: 'Reset password failed', error: err.message });
+  }
+};
+
+// Send OTP for password reset
+const sendotp = async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ message: 'Email is required' });
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ message: 'User not found with this email' });
+    // Generate 6-digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otpExpiry = Date.now() + 10 * 60 * 1000; // 10 minutes
+    // Store OTP and expiry in user document
+    user.resetOtp = otp;
+    user.resetOtpExpiry = otpExpiry;
+    await user.save();
+    // Send OTP via email
+    await transporter.sendMail({
+      from: process.env.SENDER_EMAIL,
+      to: email,
+      subject: 'Your Password Reset OTP',
+      text: `Your OTP for password reset is: ${otp}. It is valid for 10 minutes.`,
+      html: `<p>Your OTP for password reset is: <b>${otp}</b>. It is valid for 10 minutes.</p>`
+    });
+    res.status(200).json({ message: 'OTP sent to email.' });
+  } catch (err) {
+    console.error('Send OTP error:', err);
+    res.status(500).json({ message: 'Failed to send OTP', error: err.message });
+  }
+};
+
+// Reset password using OTP
+const resetpasswordOtp = async (req, res) => {
+  try {
+    const { email, otp, newPassword } = req.body;
+    if (!email || !otp || !newPassword) {
+      return res.status(400).json({ message: 'Email, OTP, and new password are required' });
+    }
+    const user = await User.findOne({ email }).select('+password +resetOtp +resetOtpExpiry');
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    // Check OTP and expiry
+    if (!user.resetOtp || !user.resetOtpExpiry || user.resetOtp !== otp || Date.now() > user.resetOtpExpiry) {
+      return res.status(400).json({ message: 'Invalid or expired OTP' });
+    }
+    // Update password and clear OTP fields
+    user.password = await bcrypt.hash(newPassword, 10);
+    user.resetOtp = undefined;
+    user.resetOtpExpiry = undefined;
+    await user.save();
+    res.status(200).json({ message: 'Password has been reset successfully.' });
+  } catch (err) {
+    console.error('Reset password OTP error:', err);
+    res.status(500).json({ message: 'Reset password with OTP failed', error: err.message });
+  }
+};
 
 /**
  * Controller for user sign-in (login)
@@ -230,6 +356,11 @@ const userControllers={
     google,
     updateUser,
     getUserListing,
- }
+    signout,
+    forgetpassword,
+    resetpassword,
+    sendotp,
+    resetpasswordOtp,
+}
 
 module.exports=userControllers;

@@ -162,6 +162,9 @@ function Signin() {
               >
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
               </button>
+              <div className="mt-2 text-right">
+                <Link to="/forget-password" className="text-blue-500 hover:underline text-sm font-medium">Forgot password?</Link>
+              </div>
             </div>
             {/* Submit button with loading spinner and animation */}
             <button

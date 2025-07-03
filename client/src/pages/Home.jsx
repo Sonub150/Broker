@@ -30,18 +30,12 @@ function Home() {
   const [error, setError] = useState('');
   const [sliderIndexes, setSliderIndexes] = useState({}); // {listingId: index}
   const [search, setSearch] = useState('');
+  const [searching, setSearching] = useState(false); // New: searching state
+  const [dealOfTheDay, setDealOfTheDay] = useState(null); // Store deal of the day from backend
   const navigate = useNavigate();
 
   // Helper to get flash offers and deal of the day
   const flashOffers = listings.filter(l => l.offer);
-  // Deal of the day: best discount (lowest discountedPrice/regularPrice)
-  const dealOfTheDay = listings.reduce((best, curr) => {
-    if (!curr.offer) return best;
-    const currDiscount = curr.discountedPrice / curr.regularPrice;
-    if (!best) return curr;
-    const bestDiscount = best.discountedPrice / best.regularPrice;
-    return currDiscount < bestDiscount ? curr : best;
-  }, null);
 
   // Slider state for flash offers
   const [flashIndex, setFlashIndex] = useState(0);
@@ -74,6 +68,7 @@ function Home() {
     return `${hours}h ${minutes}m`;
   }
 
+  // Fetch listings and deal of the day from backend
   useEffect(() => {
     async function fetchListings() {
       setLoading(true);
@@ -90,7 +85,21 @@ function Home() {
         setLoading(false);
       }
     }
+    async function fetchDealOfTheDay() {
+      try {
+        const res = await fetch('http://localhost:3000/api/deal-of-the-day');
+        const data = await res.json();
+        if (res.ok && data.data && data.data.listing) {
+          setDealOfTheDay(data.data.listing);
+        } else {
+          setDealOfTheDay(null);
+        }
+      } catch (err) {
+        setDealOfTheDay(null);
+      }
+    }
     fetchListings();
+    fetchDealOfTheDay();
   }, []);
 
   // Slider controls
@@ -105,6 +114,13 @@ function Home() {
       ...prev,
       [id]: prev[id] < images.length - 1 ? prev[id] + 1 : 0,
     }));
+  };
+
+  // Add this handler for the search form
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (!search.trim()) return;
+    navigate(`/search-results?q=${encodeURIComponent(search)}`);
   };
 
   if (loading) return <div className="flex justify-center items-center h-64 text-xl font-bold">Loading...</div>;
@@ -151,7 +167,7 @@ function Home() {
           Let AI deliver instant insights, polished marketing content, pro-level reports — and now, fully designed listing websites ready to share.
         </p>
         {/* Search Bar with CTA */}
-        <form className="relative z-10 flex flex-col md:flex-row items-center justify-center gap-3 w-full max-w-xl mx-auto">
+        <form className="relative z-10 flex flex-col md:flex-row items-center justify-center gap-3 w-full max-w-xl mx-auto" onSubmit={handleSearch}>
           <div className="flex items-center bg-white border border-gray-300 rounded-full px-4 py-2 w-full md:w-80 shadow">
             <FaMapMarkerAlt className="text-purple-400 mr-2" />
             <input
@@ -484,11 +500,11 @@ function Home() {
         <div className="max-w-7xl mx-auto px-4 flex flex-col gap-10">
           {/* Logos Row */}
           <div className="flex flex-wrap justify-center gap-10 mb-8 opacity-70">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Adobe_logo.png" alt="Adobe Homes" className="h-10 object-contain grayscale" />
-            <img src="https://upload.wikimedia.org/wikipedia/commons/4/4a/Logo_2013_Builder.png" alt="AA Builders" className="h-10 object-contain grayscale" />
-            <img src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg" alt="The Capital" className="h-10 object-contain grayscale" />
-            <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/Bitmap_rosewood_logo.png" alt="Rosewood Homes" className="h-10 object-contain grayscale" />
-            <img src="https://upload.wikimedia.org/wikipedia/commons/2/2c/Font_Awesome_5_solid_building.svg" alt="Ironwood Apartments" className="h-10 object-contain grayscale" />
+            <img src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Adobe_logo.png" alt="Adobe" className="h-10 object-contain grayscale" />
+            <img src="https://upload.wikimedia.org/wikipedia/commons/4/4a/Logo_2013_Builder.png" alt="Builder" className="h-10 object-contain grayscale" />
+            <img src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg" alt="Google" className="h-10 object-contain grayscale" />
+            <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/Bitmap_rosewood_logo.png" alt="Rosewood" className="h-10 object-contain grayscale" />
+            <img src="https://upload.wikimedia.org/wikipedia/commons/2/2c/Font_Awesome_5_solid_building.svg" alt="Building" className="h-10 object-contain grayscale" />
           </div>
           {/* Main Footer Grid */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-10">

@@ -10,6 +10,9 @@ import CreateListing from './pages/CreateListing'
 import MyListings from './pages/MyListings'
 import EditListing from './pages/EditListing'
 import ViewListing from './pages/ViewListing'
+import SearchResults from './pages/SearchResults'
+import ForgetPassword from './pages/ForgetPassword'
+import ResetPassword from './pages/ResetPassword'
 
 export default function App() {
   
@@ -26,6 +29,9 @@ export default function App() {
     <Route path='/my-listings' element={<MyListings/>}></Route>
     <Route path='/edit-listing/:id' element={<EditListing />} />
     <Route path='/view-listing/:id' element={<ViewListing />} />
+    <Route path='/search-results' element={<SearchResults />} />
+    <Route path='/forget-password' element={<ForgetPassword />} />
+    <Route path='/reset-password' element={<ResetPassword />} />
     </Routes>
     </BrowserRouter>
   )

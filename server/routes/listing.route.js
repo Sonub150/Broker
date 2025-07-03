@@ -14,5 +14,9 @@ router.get('/listing/:id', verfiyToken, listing.getListingById)
 // Route to get all listings
 router.get('/listings', listing.getAllListings);
 
+router.get('/get',listing.search)
+
+// Route to get the listing with the lowest discountedPrice
+router.get('/deal-of-the-day', listing.getLowestPriceListing);
 
 module.exports=router;

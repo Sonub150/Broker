@@ -103,9 +103,15 @@ function Profile() {
     setModalOpen(true);
   };
   const handleCloseModal = () => setModalOpen(false);
-  const handleSignOut = () => {
-    dispatch(signInSuccess(null)); // Clear user from Redux
-    navigate('/sign-in');
+  const handleSignOut = async () => {
+    try {
+      const res = await fetch('http://localhost:3000/api/signout', { method: 'POST', credentials: 'include' });
+      if (!res.ok) throw new Error('Signout failed');
+      dispatch(signInSuccess(null)); // Clear user from Redux
+      navigate('/sign-in');
+    } catch (err) {
+      alert('Signout failed. Please try again.');
+    }
   };
 
   // Handler for Create Listing button
