@@ -13,7 +13,7 @@ const port=process.env.PORT || 3000
 app.use(cors({
   origin: [
     'http://localhost:5173',
-    'https://broker-5m9x.onrender.com'
+    'https://broker-1-osap.onrender.com'
   ],
   credentials: true
 }));
