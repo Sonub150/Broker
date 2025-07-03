@@ -3,9 +3,9 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { FaHome, FaMapMarkerAlt, FaDollarSign, FaBed, FaBath, FaCouch, FaCar, FaTag, FaImage, FaUser, FaRulerCombined, FaCalendarAlt, FaWifi, FaSwimmingPool, FaTree, FaUpload, FaEdit } from 'react-icons/fa';
 
-const BACKEND = (import.meta.env.VITE_BACKEND && import.meta.env.VITE_BACKEND.startsWith('mongodb'))
-  ? import.meta.env.VITE_BACKEND
-  : (import.meta.env.VITE_BACKEND || import.meta.env.VITE_MONGO || 'http://localhost:3000');
+const BACKEND = (import.meta.env.Backend && import.meta.env.Backend.startsWith('mongodb'))
+  ? import.meta.env.Backend
+  : (import.meta.env.Backend || import.meta.env.VITE_MONGO || 'http://localhost:3000');
 
 function EditListing() {
   const { id } = useParams();

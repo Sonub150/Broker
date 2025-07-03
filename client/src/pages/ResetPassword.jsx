@@ -5,9 +5,9 @@ function useQuery() {
   return new URLSearchParams(useLocation().search);
 }
 
-const BACKEND = (import.meta.env.VITE_BACKEND && import.meta.env.VITE_BACKEND.startsWith('mongodb'))
-  ? import.meta.env.VITE_BACKEND
-  : (import.meta.env.VITE_BACKEND || import.meta.env.VITE_MONGO || 'http://localhost:3000');
+const BACKEND = (import.meta.env.Backend && import.meta.env.Backend.startsWith('mongodb'))
+  ? import.meta.env.Backend
+  : (import.meta.env.Backend || import.meta.env.VITE_MONGO || 'http://localhost:3000');
 
 export default function ResetPassword() {
   const query = useQuery();

@@ -9,9 +9,9 @@ export default defineConfig({
   ],
   server: {
     proxy: {
-      '/api': process.env.VITE_BACKEND && process.env.VITE_BACKEND.startsWith('mongodb')
-        ? process.env.VITE_BACKEND
-        : (process.env.VITE_BACKEND || process.env.VITE_MONGO || 'http://localhost:3000'),
+      '/api': process.env.Backend && process.env.Backend.startsWith('mongodb')
+        ? process.env.Backend
+        : (process.env.Backend || process.env.VITE_MONGO || 'http://localhost:3000'),
     },
   },
 })
