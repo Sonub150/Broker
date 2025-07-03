@@ -53,17 +53,17 @@ export default function About() {
         <div className="flex flex-wrap gap-6 justify-center mt-4">
           <div className="flex flex-col items-center">
             <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-200 to-green-200 flex items-center justify-center text-3xl font-bold text-blue-700 mb-2">S</div>
-            <div className="font-semibold text-gray-800">Sonu Nigam</div>
+            <div className="font-semibold text-gray-800">Sonu B</div>
             <div className="text-sm text-gray-500">Founder & Lead Developer</div>
           </div>
           <div className="flex flex-col items-center">
             <div className="w-20 h-20 rounded-full bg-gradient-to-br from-pink-200 to-purple-200 flex items-center justify-center text-3xl font-bold text-pink-700 mb-2">A</div>
-            <div className="font-semibold text-gray-800">Amit Sharma</div>
+            <div className="font-semibold text-gray-800">Kushal Ck</div>
             <div className="text-sm text-gray-500">Product Manager</div>
           </div>
           <div className="flex flex-col items-center">
             <div className="w-20 h-20 rounded-full bg-gradient-to-br from-yellow-200 to-orange-200 flex items-center justify-center text-3xl font-bold text-yellow-700 mb-2">R</div>
-            <div className="font-semibold text-gray-800">Riya Patel</div>
+            <div className="font-semibold text-gray-800">Chindan CKB</div>
             <div className="text-sm text-gray-500">Customer Success</div>
           </div>
         </div>
