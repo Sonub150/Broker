@@ -11,10 +11,7 @@ const app=express()
 const port=process.env.PORT || 3000
 
 app.use(cors({
-  origin: [
-    'http://localhost:5173',
-    'https://broker-1-osap.onrender.com'
-  ],
+  origin: 'http://localhost:5173',
   credentials: true
 }));
 app.use(cookieparser())
@@ -78,11 +75,6 @@ if (process.env.LISTINGS_MISSING_EMAIL === 'true') {
     }
   })();
 }
-
-// Global error handler to ensure all errors return JSON
-app.use((err, req, res, next) => {
-  res.status(err.status || 500).json({ message: err.message || 'Internal Server Error' });
-});
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);

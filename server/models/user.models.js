@@ -42,10 +42,10 @@ const userSchema=new mongoose.Schema({
         type: Number,
         select: false
     },
-    // role: {
-    //     type: String,
-    //     default: 'user'
-    // },
+    role: {
+        type: String,
+        default: 'user'
+    },
 },{timestamps:true});
 
 
