@@ -7,7 +7,7 @@ import Oauth from '../components/Oauth'
 import { auth, googleProvider, githubProvider } from '../firebase'
 import { signInWithPopup } from 'firebase/auth'
 
-const BACKEND = import.meta.env.VITE_BACKEND || 'http://localhost:3000';
+const BACKEND = import.meta.env.VITE_BACKEND || 'https://broker-5m9x.onrender.com';
 
 function SignUp() {
   const [form, setForm] = useState({ username: '', email: '', password: '' })

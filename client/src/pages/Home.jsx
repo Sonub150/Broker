@@ -74,7 +74,7 @@ function Home() {
       setLoading(true);
       setError('');
       try {
-        const res = await fetch('http://localhost:3000/api/listings', { credentials: 'include' });
+        const res = await fetch('https://broker-5m9x.onrender.com/api/listings', { credentials: 'include' });
         const data = await res.json();
         if (!res.ok) throw new Error(data.message || 'Failed to fetch listings');
         const allListings = data.data?.listings || data.listings || data.listing || [];
@@ -87,7 +87,7 @@ function Home() {
     }
     async function fetchDealOfTheDay() {
       try {
-        const res = await fetch('http://localhost:3000/api/deal-of-the-day');
+        const res = await fetch('https://broker-5m9x.onrender.com/api/deal-of-the-day');
         const data = await res.json();
         if (res.ok && data.data && data.data.listing) {
           setDealOfTheDay(data.data.listing);

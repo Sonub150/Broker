@@ -105,7 +105,7 @@ function Profile() {
   const handleCloseModal = () => setModalOpen(false);
   const handleSignOut = async () => {
     try {
-      const res = await fetch('http://localhost:3000/api/signout', { method: 'POST', credentials: 'include' });
+      const res = await fetch('https://broker-5m9x.onrender.com/api/signout', { method: 'POST', credentials: 'include' });
       if (!res.ok) throw new Error('Signout failed');
       dispatch(signInSuccess(null)); // Clear user from Redux
       navigate('/sign-in');

@@ -33,7 +33,7 @@ export default function ResetPassword() {
     }
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:3000/api/resetpassword', {
+      const res = await fetch('https://broker-5m9x.onrender.com/api/resetpassword', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token, newPassword }),

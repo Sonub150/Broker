@@ -9,7 +9,7 @@ export default defineConfig({
   ],
   server: {
     proxy: {
-      '/api': 'http://localhost:3000',
+      '/api': 'https://broker-5m9x.onrender.com',
     },
   },
 })

@@ -103,7 +103,7 @@ function EditListing() {
     setLoading(true);
     try {
       // Use the full backend URL for updating the listing
-      const response = await fetch(`http://localhost:3000/api/listingUpdate/${id}`, {
+      const response = await fetch(`https://broker-5m9x.onrender.com/api/listingUpdate/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

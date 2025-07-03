@@ -19,7 +19,7 @@ export default function ForgetPassword() {
     setError('');
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:3000/api/forgetpassword', {
+      const res = await fetch('https://broker-5m9x.onrender.com/api/forgetpassword', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
@@ -41,7 +41,7 @@ export default function ForgetPassword() {
     setError('');
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:3000/api/sendotp', {
+      const res = await fetch('https://broker-5m9x.onrender.com/api/sendotp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
@@ -72,7 +72,7 @@ export default function ForgetPassword() {
     }
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:3000/api/resetpassword-otp', {
+      const res = await fetch('https://broker-5m9x.onrender.com/api/resetpassword-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, otp, newPassword }),

@@ -16,7 +16,7 @@ export default function ViewListing() {
       setLoading(true);
       setError('');
       try {
-        const res = await fetch(`http://localhost:3000/api/listing/${id}`, {
+        const res = await fetch(`https://broker-5m9x.onrender.com/api/listing/${id}`, {
           credentials: 'include'
         });
         const data = await res.json();
