@@ -3,7 +3,7 @@ const listing = require('../controllers/createListing.con');
 const verfiyToken = require('../utills/verifyUser');
 
 
-const router=express()
+const router=express.Router()
 
 router.post('/create', verfiyToken,listing.createListing)
 router.delete('/listingDelete/:id',verfiyToken,listing.listingDelete)
