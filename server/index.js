@@ -79,6 +79,11 @@ if (process.env.LISTINGS_MISSING_EMAIL === 'true') {
   })();
 }
 
+// Global error handler to ensure all errors return JSON
+app.use((err, req, res, next) => {
+  res.status(err.status || 500).json({ message: err.message || 'Internal Server Error' });
+});
+
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
